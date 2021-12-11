@@ -1,4 +1,5 @@
 
+//TODO: Refactor code here 
 function statement (invoice, plays) {
     let totalAmount = 0;
     let volumeCredits = 0;
