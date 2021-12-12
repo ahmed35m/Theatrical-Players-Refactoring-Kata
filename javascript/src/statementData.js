@@ -1,45 +1,42 @@
-const PlayTypes = require('../src/PlayType');
-const InvoiceCalculator = require('./invoiceCalculator');
+const PlayTypes = require("../src/PlayType");
+const InvoiceCalculator = require("./invoiceCalculator");
 
 function statementData(invoice, plays) {
     let statementData = {};
-    statementData.totalAmount = getTotalAmount(plays, invoice);
-    statementData.volumeCredits = getTotalVolumeCredits(plays, invoice);
+    statementData.totalAmount = getTotalAmount(invoice);
+    statementData.volumeCredits = getTotalVolumeCredits(invoice);
     statementData.customer = invoice.customer;
-    statementData.performancesInfo = getPerformances(plays, invoice);
+    statementData.performancesInfo = getPerformances(invoice);
     return statementData;
 
-    function getPerformances(plays, invoice) {
-        let perfs = [];
-        for (let perf of invoice.performances) {
-            let p = Object.assign({}, perf);
-            p.play = getPlay(plays, perf);
-            p.amount = getAmount(p.play, perf);
-            perfs.push(p);
-        }
+    function getPerformances(invoice) {
+        let perfs = invoice.performances.map((p) => createPerformance(p));
         return perfs;
+    }
+    function createPerformance(perf) {
+        let p = Object.assign({}, perf);
+        p.play = getPlay(perf);
+        p.amount = getAmount(p.play, perf);
+        return p;
     }
 
     function getVolumeCredits(play, perf) {
         let volumeCredits = 0;
         volumeCredits += Math.max(perf.audience - 30, 0);
-        if (PlayTypes.COMEDY === play.type)
-            volumeCredits += Math.floor(perf.audience / 5);
+        if (PlayTypes.COMEDY === play.type) volumeCredits += Math.floor(perf.audience / 5);
         return volumeCredits;
     }
-    function getTotalVolumeCredits(plays, invoice) {
-        let volumeCredits = 0;
-        for (let perf of invoice.performances) {
-            const play = getPlay(plays, perf);
-            volumeCredits += getVolumeCredits(play, perf);
-        }
+    function getTotalVolumeCredits(invoice) {
+        const reducer = (totalCredit, perf) => totalCredit + getVolumeCredits(getPlay(perf), perf);
+        let volumeCredits = invoice.performances.reduce(reducer, 0);
+
         return volumeCredits;
     }
 
-    function getTotalAmount(plays, invoice) {
+    function getTotalAmount(invoice) {
         let totalAmount = 0;
         for (let perf of invoice.performances) {
-            const play = getPlay(plays, perf);
+            const play = getPlay(perf);
             let thisAmount = getAmount(play, perf);
             totalAmount += thisAmount;
         }
@@ -50,10 +47,10 @@ function statementData(invoice, plays) {
         let thisAmount = 0;
         switch (play.type) {
             case PlayTypes.TRADEGY:
-                thisAmount = new InvoiceCalculator(play, perf).calculateAmount()
+                thisAmount = new InvoiceCalculator(play, perf).calculateAmount();
                 break;
             case PlayTypes.COMEDY:
-                thisAmount = new InvoiceCalculator(play,perf).calculateAmount()
+                thisAmount = new InvoiceCalculator(play, perf).calculateAmount();
                 break;
             default:
                 throw new Error(`unknown type: ${play.type}`);
@@ -61,10 +58,9 @@ function statementData(invoice, plays) {
         return thisAmount;
     }
 
-    function getPlay(plays, perf) {
+    function getPlay(perf) {
         return plays[perf.playID];
     }
 }
-
 
 module.exports = statementData;
