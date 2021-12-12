@@ -1,30 +1,19 @@
-const PlayTypes = require('../src/PlayType');
+const PlayTypes = require("../src/PlayType");
 
 class InvoiceCalculator {
     constructor(play, perf) {
-        this.amount = 0;
-        this.type = play.type;
+        // this.amount = 0;
+        this.play = play;
         this.perf = perf;
     }
 
     calculateAmount() {
-        if (this.type == PlayTypes.COMEDY) {
-            let thisAmount = 30000;
-            if (this.perf.audience > 20) {
-                thisAmount += 10000 + 500 * (this.perf.audience - 20);
-            }
-            thisAmount += 300 * this.perf.audience;
-            return thisAmount;
-        }
-        if (this.type == PlayTypes.TRADEGY) {
-            let thisAmount = 40000;
-            if (this.perf.audience > 30) {
-                thisAmount += 1000 * (this.perf.audience - 30);
-            }
-            return thisAmount;
-        }
+        //common calculation logic/ base amount goes here
+        return 0;
     }
-    
+    getVolumeCredits(){
+        return Math.max(this.perf.audience - 30, 0);
+    }
 }
 
 module.exports = InvoiceCalculator;

@@ -1,5 +1,7 @@
 const PlayTypes = require("../src/PlayType");
+const ComedyInvoiceCalculator = require("./comedyInvoiceCalculator");
 const InvoiceCalculator = require("./invoiceCalculator");
+const TradegyInvoiceCalculator = require("./tradegyInvoiceCalculator");
 
 function statementData(invoice, plays) {
     let statementData = {};
@@ -8,7 +10,6 @@ function statementData(invoice, plays) {
     statementData.customer = invoice.customer;
     statementData.performancesInfo = getPerformances(invoice);
     return statementData;
-
     function getPerformances(invoice) {
         let perfs = invoice.performances.map((p) => createPerformance(p));
         return perfs;
@@ -19,12 +20,30 @@ function statementData(invoice, plays) {
         p.amount = getAmount(p.play, perf);
         return p;
     }
-
+    function getCalculator(play,perf){
+        switch (play.type) {
+            case PlayTypes.TRADEGY:
+                return new TradegyInvoiceCalculator(play, perf);
+                break;
+            case PlayTypes.COMEDY:
+                return new ComedyInvoiceCalculator(play, perf);
+                break;
+            default:
+                return new InvoiceCalculator(play,perf);
+        }
+    }
     function getVolumeCredits(play, perf) {
-        let volumeCredits = 0;
-        volumeCredits += Math.max(perf.audience - 30, 0);
-        if (PlayTypes.COMEDY === play.type) volumeCredits += Math.floor(perf.audience / 5);
-        return volumeCredits;
+        return getCalculator(play,perf).getVolumeCredits();
+        switch (play.type) {
+            case PlayTypes.TRADEGY:
+                return new TradegyInvoiceCalculator(play, perf).getVolumeCredits();
+                break;
+            case PlayTypes.COMEDY:
+                return new ComedyInvoiceCalculator(play, perf).getVolumeCredits();
+                break;
+            default:
+                return new InvoiceCalculator(play,perf).getVolumeCredits();
+        }
     }
     function getTotalVolumeCredits(invoice) {
         const reducer = (totalCredit, perf) => totalCredit + getVolumeCredits(getPlay(perf), perf);
@@ -47,10 +66,10 @@ function statementData(invoice, plays) {
         let thisAmount = 0;
         switch (play.type) {
             case PlayTypes.TRADEGY:
-                thisAmount = new InvoiceCalculator(play, perf).calculateAmount();
+                thisAmount = new TradegyInvoiceCalculator(play, perf).calculateAmount();
                 break;
             case PlayTypes.COMEDY:
-                thisAmount = new InvoiceCalculator(play, perf).calculateAmount();
+                thisAmount = new ComedyInvoiceCalculator(play, perf).calculateAmount();
                 break;
             default:
                 throw new Error(`unknown type: ${play.type}`);
