@@ -1,6 +1,5 @@
 const PlayTypes = require("../src/PlayType");
 const ComedyInvoiceCalculator = require("./comedyInvoiceCalculator");
-const InvoiceCalculator = require("./invoiceCalculator");
 const TradegyInvoiceCalculator = require("./tradegyInvoiceCalculator");
 
 function statementData(invoice, plays) {
@@ -20,7 +19,7 @@ function statementData(invoice, plays) {
         p.amount = getAmount(p.play, perf);
         return p;
     }
-    function getCalculator(play,perf){
+    function getCalculator(play, perf) {
         switch (play.type) {
             case PlayTypes.TRADEGY:
                 return new TradegyInvoiceCalculator(play, perf);
@@ -30,11 +29,10 @@ function statementData(invoice, plays) {
                 break;
             default:
                 throw new Error(`unknown type: ${play.type}`);
-
         }
     }
     function getVolumeCredits(play, perf) {
-        return getCalculator(play,perf).getVolumeCredits();
+        return getCalculator(play, perf).getVolumeCredits();
     }
     function getTotalVolumeCredits(invoice) {
         const reducer = (totalCredit, perf) => totalCredit + getVolumeCredits(getPlay(perf), perf);
@@ -44,17 +42,14 @@ function statementData(invoice, plays) {
     }
 
     function getTotalAmount(invoice) {
-        let totalAmount = 0;
-        for (let perf of invoice.performances) {
-            const play = getPlay(perf);
-            let thisAmount = getAmount(play, perf);
-            totalAmount += thisAmount;
-        }
+        const reducer = (total, perf) => total + getAmount(getPlay(perf), perf);
+
+        let totalAmount = invoice.performances.reduce(reducer, 0);
         return totalAmount;
     }
 
     function getAmount(play, perf) {
-        let thisAmount = getCalculator(play,perf).calculateAmount()
+        let thisAmount = getCalculator(play, perf).calculateAmount();
         return thisAmount;
     }
 
