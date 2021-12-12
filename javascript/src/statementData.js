@@ -9,6 +9,7 @@ function statementData(invoice, plays) {
     statementData.customer = invoice.customer;
     statementData.performancesInfo = getPerformances(invoice);
     return statementData;
+
     function getPerformances(invoice) {
         let perfs = invoice.performances.map((p) => createPerformance(p));
         return perfs;
