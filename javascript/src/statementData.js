@@ -29,21 +29,12 @@ function statementData(invoice, plays) {
                 return new ComedyInvoiceCalculator(play, perf);
                 break;
             default:
-                return new InvoiceCalculator(play,perf);
+                throw new Error(`unknown type: ${play.type}`);
+
         }
     }
     function getVolumeCredits(play, perf) {
         return getCalculator(play,perf).getVolumeCredits();
-        switch (play.type) {
-            case PlayTypes.TRADEGY:
-                return new TradegyInvoiceCalculator(play, perf).getVolumeCredits();
-                break;
-            case PlayTypes.COMEDY:
-                return new ComedyInvoiceCalculator(play, perf).getVolumeCredits();
-                break;
-            default:
-                return new InvoiceCalculator(play,perf).getVolumeCredits();
-        }
     }
     function getTotalVolumeCredits(invoice) {
         const reducer = (totalCredit, perf) => totalCredit + getVolumeCredits(getPlay(perf), perf);
@@ -63,17 +54,7 @@ function statementData(invoice, plays) {
     }
 
     function getAmount(play, perf) {
-        let thisAmount = 0;
-        switch (play.type) {
-            case PlayTypes.TRADEGY:
-                thisAmount = new TradegyInvoiceCalculator(play, perf).calculateAmount();
-                break;
-            case PlayTypes.COMEDY:
-                thisAmount = new ComedyInvoiceCalculator(play, perf).calculateAmount();
-                break;
-            default:
-                throw new Error(`unknown type: ${play.type}`);
-        }
+        let thisAmount = getCalculator(play,perf).calculateAmount()
         return thisAmount;
     }
 

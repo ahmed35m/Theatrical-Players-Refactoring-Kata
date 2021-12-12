@@ -1,18 +1,16 @@
 function renderStatement(statementData) {
     let result = `Statement for ${statementData.customer}\n`;
     result += renderPerformances(statementData.performancesInfo);
-    result += `Amount owed is ${getCurrencyFormatted(
-        statementData.totalAmount
-    )}\n`;
+    result += `Amount owed is ${getCurrencyFormatted(statementData.totalAmount)}\n`;
     result += `You earned ${statementData.volumeCredits} credits\n`;
     return result;
 
     function renderPerformances(perfs) {
         let result = "";
         for (let perf of perfs) {
-            result += ` ${perf.play.name}: ${getCurrencyFormatted(
-                perf.amount
-            )} (${perf.audience} seats)\n`;
+            result += ` ${perf.play.name}: ${getCurrencyFormatted(perf.amount)} (${
+                perf.audience
+            } seats)\n`;
         }
         return result;
     }
