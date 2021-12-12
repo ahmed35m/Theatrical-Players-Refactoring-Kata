@@ -50,10 +50,10 @@ function statementData(invoice, plays) {
         let thisAmount = 0;
         switch (play.type) {
             case PlayTypes.TRADEGY:
-                thisAmount =  InvoiceCalculator(play, perf)
+                thisAmount = new InvoiceCalculator(play, perf).calculateAmount()
                 break;
             case PlayTypes.COMEDY:
-                thisAmount =  InvoiceCalculator(play,perf)
+                thisAmount = new InvoiceCalculator(play,perf).calculateAmount()
                 break;
             default:
                 throw new Error(`unknown type: ${play.type}`);
