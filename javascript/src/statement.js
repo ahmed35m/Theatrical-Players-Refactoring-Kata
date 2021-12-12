@@ -1,20 +1,48 @@
-
-//TODO: Add Handling for Plain vs HTML
-function statement (invoice, plays) {
-    const usdFormat = getCurrencyFormat("en-US","USD", 2);
-    let totalAmount = getTotalAmount(plays, invoice);
-    let volumeCredits = getTotalVolumeCredits(plays,invoice);    
-    let result = getCompleteResult(plays, invoice,usdFormat, volumeCredits, totalAmount )
+function statement(invoice, plays) {
+    const statementData = getStatementData(plays, invoice);
+    let result = renderStatement(statementData );
     return result;
 }
-function getVolumeCredits(play, perf){
-    let volumeCredits = 0;
-     // add volume credits
-     volumeCredits += Math.max(perf.audience - 30, 0);
-     if ("comedy" === play.type) volumeCredits += Math.floor(perf.audience / 5);
-     return volumeCredits;
+function getStatementData(plays, invoice){
+    let statementData = {};
+    statementData.totalAmount = getTotalAmount(plays, invoice);
+    statementData.volumeCredits = getTotalVolumeCredits(plays, invoice);
+    statementData.customer = invoice.customer;
+    statementData.performancesInfo = getPerformances(plays, invoice);
+    return statementData;
 }
-function getTotalVolumeCredits(plays, invoice ){
+function getPerformances(plays, invoice){
+    let perfs = [];
+    for (let perf of invoice.performances) {
+        let p = Object.assign({}, perf);
+        p.play = getPlay(plays,perf)
+        p.amount = getAmount(p.play, perf)
+        perfs.push(p);
+    }
+    return perfs;
+}
+function renderPerformances(perfs) {
+    let result = "";
+    for (let perf of perfs) {
+        result += ` ${perf.play.name}: ${getCurrencyFormatted( perf.amount)} (${perf.audience} seats)\n`;
+    }
+    return result;
+}
+function renderStatement(statementData) {
+    let result = `Statement for ${statementData.customer}\n`;
+    result += renderPerformances(statementData.performancesInfo);
+    result += `Amount owed is ${getCurrencyFormatted(statementData.totalAmount)}\n`;
+    result += `You earned ${statementData.volumeCredits} credits\n`;
+    return result;
+}
+
+function getVolumeCredits(play, perf) {
+    let volumeCredits = 0;
+    volumeCredits += Math.max(perf.audience - 30, 0);
+    if ("comedy" === play.type) volumeCredits += Math.floor(perf.audience / 5);
+    return volumeCredits;
+}
+function getTotalVolumeCredits(plays, invoice) {
     let volumeCredits = 0;
     for (let perf of invoice.performances) {
         const play = getPlay(plays, perf);
@@ -22,24 +50,9 @@ function getTotalVolumeCredits(plays, invoice ){
     }
     return volumeCredits;
 }
-function getAllResults(plays, invoice, format){
-    let result = "";    
-    for (let perf of invoice.performances) {
-        const play = getPlay(plays, perf);
-        let thisAmount = getAmount(play, perf);
-        result += ` ${play.name}: ${format(thisAmount/100)} (${perf.audience} seats)\n`;
-    }
-    return result;
-}
-function getCompleteResult(plays, invoice, format,volumeCredits, totalAmount){
-    let result = `Statement for ${invoice.customer}\n`;
-    result += getAllResults(plays, invoice, format);
-    result += `Amount owed is ${format(totalAmount/100)}\n`;
-    result += `You earned ${volumeCredits} credits\n`;
-    return result;
-}
-function getTotalAmount(plays, invoice ){
-    let totalAmount = 0;    
+
+function getTotalAmount(plays, invoice) {
+    let totalAmount = 0;
     for (let perf of invoice.performances) {
         const play = getPlay(plays, perf);
         let thisAmount = getAmount(play, perf);
@@ -48,7 +61,7 @@ function getTotalAmount(plays, invoice ){
     return totalAmount;
 }
 
-function getAmount( play, perf){
+function getAmount(play, perf) {
     let thisAmount = 0;
     switch (play.type) {
         case "tragedy":
@@ -70,15 +83,17 @@ function getAmount( play, perf){
     return thisAmount;
 }
 
-function getPlay(plays, perf){
-    return plays[perf.playID]
+function getPlay(plays, perf) {
+    return plays[perf.playID];
 }
 
-function getCurrencyFormat(lang,currency, minFraction){
-    return  new Intl.NumberFormat(lang,
-    { style: "currency", currency: currency,
-        minimumFractionDigits: minFraction }).format;
+function getCurrencyFormatted(value) {
+    let format =  new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+            minimumFractionDigits: 2,
+        }).format;
+    return format(value/100);
 }
-
 
 module.exports = statement;
