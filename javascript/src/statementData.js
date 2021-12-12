@@ -1,3 +1,5 @@
+const PlayTypes = require('../src/PlayType');
+
 function statementData(invoice, plays) {
     let statementData = {};
     statementData.totalAmount = getTotalAmount(plays, invoice);
@@ -20,7 +22,7 @@ function statementData(invoice, plays) {
     function getVolumeCredits(play, perf) {
         let volumeCredits = 0;
         volumeCredits += Math.max(perf.audience - 30, 0);
-        if (PlayType.COMEDY === play.type)
+        if (PlayTypes.COMEDY === play.type)
             volumeCredits += Math.floor(perf.audience / 5);
         return volumeCredits;
     }
@@ -46,13 +48,13 @@ function statementData(invoice, plays) {
     function getAmount(play, perf) {
         let thisAmount = 0;
         switch (play.type) {
-            case PlayType.TRADEGY:
+            case PlayTypes.TRADEGY:
                 thisAmount = 40000;
                 if (perf.audience > 30) {
                     thisAmount += 1000 * (perf.audience - 30);
                 }
                 break;
-            case PlayType.COMEDY:
+            case PlayTypes.COMEDY:
                 thisAmount = 30000;
                 if (perf.audience > 20) {
                     thisAmount += 10000 + 500 * (perf.audience - 20);
@@ -70,8 +72,5 @@ function statementData(invoice, plays) {
     }
 }
 
-const PlayType = {
-    COMEDY: "comedy",
-    TRADEGY: "tragedy",
-};
+
 module.exports = statementData;
