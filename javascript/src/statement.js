@@ -1,12 +1,14 @@
 const statementData = require("../src/statementData");
-const renderStatement = require("../src/renderStatement");
+// const renderStatement = require("../src/renderStatement");
+const createRenderer = require("./Renderer/renderFactory");
 
 function statement(invoice, plays) {
     //get data for statement
     const data = statementData(invoice, plays);
 
     //get statement rendered
-    let result = renderStatement(data);
+    const renderer = createRenderer(data)
+    let result = renderer.renderStatement();
 
     return result;
 }
