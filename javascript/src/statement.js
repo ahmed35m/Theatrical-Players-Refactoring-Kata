@@ -1,5 +1,4 @@
 const statementData = require("../src/statementData");
-// const renderStatement = require("../src/renderStatement");
 const createRenderer = require("./Renderer/renderFactory");
 
 function statement(invoice, plays) {
