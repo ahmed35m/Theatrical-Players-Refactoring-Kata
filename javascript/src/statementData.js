@@ -10,6 +10,17 @@ function statementData(invoice, plays) {
     statementData.performancesInfo = getPerformances(invoice);
     return statementData;
 
+    function getCalculator(play, perf) {
+        switch (play.type) {
+            case PlayTypes.TRADEGY:
+                return new TradegyInvoiceCalculator(play, perf);
+            case PlayTypes.COMEDY:
+                return new ComedyInvoiceCalculator(play, perf);
+            default:
+                throw new Error(`unknown type: ${play.type}`);
+            //for new Play types, add a new calculator and import it here as well
+        }
+    }
     function getPerformances(invoice) {
         let perfs = invoice.performances.map((p) => createPerformance(p));
         return perfs;
@@ -20,22 +31,11 @@ function statementData(invoice, plays) {
         p.amount = getAmount(p.play, perf);
         return p;
     }
-    function getCalculator(play, perf) {
-        switch (play.type) {
-            case PlayTypes.TRADEGY:
-                return new TradegyInvoiceCalculator(play, perf);
-                break;
-            case PlayTypes.COMEDY:
-                return new ComedyInvoiceCalculator(play, perf);
-                break;
-            default:
-                throw new Error(`unknown type: ${play.type}`);
-            //for new Play types, add a new calculator and import it here as well
-        }
-    }
+
     function getVolumeCredits(play, perf) {
         return getCalculator(play, perf).getVolumeCredits();
     }
+    
     function getTotalVolumeCredits(invoice) {
         const reducer = (totalCredit, perf) => totalCredit + getVolumeCredits(getPlay(perf), perf);
         let volumeCredits = invoice.performances.reduce(reducer, 0);
