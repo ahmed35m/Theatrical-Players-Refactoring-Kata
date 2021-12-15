@@ -10,7 +10,7 @@ function renderStatement(statementData) {
         return result;
     }
 
-    function renderAsHTML(data){
+    function renderAsHTML(data) {
         let result = `<h1>Statement for ${data.customer}</h1><br>\n`;
         result += renderPerformancesAsHTML(data.performancesInfo);
         result += `<h3>Amount owed is ${getCurrencyFormatted(data.totalAmount)}</h3><br>\n`;
@@ -18,23 +18,29 @@ function renderStatement(statementData) {
         return result;
     }
     function renderPerformancesAsHTML(perfs) {
-        let result = "<table><th>Name</th><th>Amount</th<th><Audience/th>\n";
-        for (let perf of perfs) {
-            result += `<tr><td> ${perf.play.name} </td><td> ${getCurrencyFormatted(perf.amount)} </td><td> (${
-                perf.audience
-            } seats)</td><td></tr>\n`;
-        }
-        return result;
+        let result = "<table><th>Name</th><th>Amount</th><th><Audience/th>\n";
+        const reducer = (result, currentRow) => {
+            return (
+                result +
+                `<tr><td> ${currentRow.play.name} </td><td> ${getCurrencyFormatted(
+                    currentRow.amount
+                )} </td><td> (${currentRow.audience} seats)</td><td></tr>\n`
+            );
+        };
+        
+        return perfs.reduce(reducer, result);
     }
 
     function renderPerformancesAsText(perfs) {
-        let result = "";
-        for (let perf of perfs) {
-            result += ` ${perf.play.name}: ${getCurrencyFormatted(perf.amount)} (${
-                perf.audience
-            } seats)\n`;
-        }
-        return result;
+        const reducer = (result, currentRow) => {
+            return (
+                result +
+                ` ${currentRow.play.name}: ${getCurrencyFormatted(currentRow.amount)} (${
+                    currentRow.audience
+                } seats)\n`
+            );
+        };
+        return  perfs.reduce(reducer, "");
     }
     function getCurrencyFormatted(value) {
         let format = new Intl.NumberFormat("en-US", {
