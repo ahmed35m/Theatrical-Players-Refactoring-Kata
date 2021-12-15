@@ -16,7 +16,7 @@ class HTMLRenderer extends Renderer {
     }
     renderStatement() {
         let result = `<h1>Statement for ${this.data.customer}</h1><br>\n`;
-        result += renderPerformances(this.data.performancesInfo);
+        result += this.renderPerformances(this.data.performancesInfo);
         result += `<h3>Amount owed is ${this.getCurrencyFormatted(
             this.data.totalAmount
         )}</h3><br>\n`;
