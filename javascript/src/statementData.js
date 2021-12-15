@@ -22,8 +22,8 @@ function statementData(invoice, plays) {
         }
     }
     function getPerformances(invoice) {
-        let perfs = invoice.performances.map((p) => createPerformance(p));
-        return perfs;
+        return invoice.performances.map((p) => createPerformance(p));
+        
     }
     function createPerformance(perf) {
         let p = Object.assign({}, perf);
@@ -38,21 +38,16 @@ function statementData(invoice, plays) {
     
     function getTotalVolumeCredits(invoice) {
         const reducer = (totalCredit, perf) => totalCredit + getVolumeCredits(getPlay(perf), perf);
-        let volumeCredits = invoice.performances.reduce(reducer, 0);
-
-        return volumeCredits;
+        return invoice.performances.reduce(reducer, 0);
     }
 
     function getTotalAmount(invoice) {
-        const reducer = (total, perf) => total + getAmount(getPlay(perf), perf);
-
-        let totalAmount = invoice.performances.reduce(reducer, 0);
-        return totalAmount;
+        const reducer = (total, perf) => total + getAmount(getPlay(perf), perf);         
+        return invoice.performances.reduce(reducer, 0);
     }
 
     function getAmount(play, perf) {
-        let thisAmount = getCalculator(play, perf).calculateAmount();
-        return thisAmount;
+        return getCalculator(play, perf).calculateAmount();
     }
 
     function getPlay(perf) {
