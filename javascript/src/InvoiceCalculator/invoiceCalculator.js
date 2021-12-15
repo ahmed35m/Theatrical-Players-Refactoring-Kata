@@ -1,4 +1,4 @@
-const PlayTypes = require("../src/PlayType");
+const PlayTypes = require("../PlayType");
 
 class InvoiceCalculator {
     constructor(play, perf) {

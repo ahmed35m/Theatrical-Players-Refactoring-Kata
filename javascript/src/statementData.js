@@ -1,6 +1,6 @@
 const PlayTypes = require("../src/PlayType");
-const ComedyInvoiceCalculator = require("./comedyInvoiceCalculator");
-const TradegyInvoiceCalculator = require("./tradegyInvoiceCalculator");
+const ComedyInvoiceCalculator = require("./InvoiceCalculator/comedyInvoiceCalculator");
+const TradegyInvoiceCalculator = require("./InvoiceCalculator/tradegyInvoiceCalculator");
 
 function statementData(invoice, plays) {
     let statementData = {};
