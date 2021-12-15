@@ -30,6 +30,7 @@ function statementData(invoice, plays) {
                 break;
             default:
                 throw new Error(`unknown type: ${play.type}`);
+            //for new Play types, add a new calculator and import it here as well
         }
     }
     function getVolumeCredits(play, perf) {
